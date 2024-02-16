@@ -48,17 +48,18 @@ export class PipelineStack extends Stack {
 
     const githubRepo = 'shivaam/whisper-pulsar-consumer-cdk';
 
-    const gitHubSource = CodePipelineSource.gitHub(githubRepo, "main", {
+    const gitHubSource = CodePipelineSource.gitHub(githubRepo, "master", {
       authentication: SecretValue.secretsManager("lambda_container_cdk_pipeline_github", { jsonField: 'github' }),
     });
 
     // A shell script step that describes a github source code and runs the commands on the source code to build the pipeline.
     // In the shell step we are also building the application code along with the pipeline code.
-
+    // Local install of cdk is not available at the system path so cdk cli wont work. We need to either install it globally or
+    // we can use npx cdk synth which will use the local isntalce of the cli
     const pipeline = new CodePipeline(this, "ContainerPipeline", {
       synth: new ShellStep("Synth", {
         input: gitHubSource,
-        commands: ["npm install", "cdk synth"],
+        commands: ["npm install -g aws-cdk", "npm install", "cdk synth"],
       }),
     });
 
