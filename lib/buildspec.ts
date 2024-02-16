@@ -1,6 +1,10 @@
 export const buildspec = {
     "version":"0.2",
-
+    "env": {
+      "secrets-manager": {
+        "DOCKERHUB_USERNAME": "dockerhub/username",
+        "DOCKERHUB_PASS": "dockerhub/password",
+      }},
     "phases": {
         "install" : {
             "runtime-versions": {
@@ -10,6 +14,8 @@ export const buildspec = {
 
         "pre_build" : {
             "commands": [
+                    'echo Logging in to Docker Hub...',
+                    'docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASS',
                     'echo Logging in to Amazon ECR...',
                     'echo $AWS_DEFAULT_REGION',
                     'echo $AWS_ACCOUNT_ID',
