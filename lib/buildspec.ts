@@ -4,8 +4,7 @@ export const buildspec = {
     "phases": {
         "install" : {
             "runtime-versions": {
-                    "python": 3.8,
-                    "docker": 19
+                    "python": 3.8
             },
         },
 
