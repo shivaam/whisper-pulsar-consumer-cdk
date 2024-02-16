@@ -84,6 +84,8 @@ export class PipelineStack extends Stack {
         AWS_ACCOUNT_ID: this.account,
         IMAGE_REPO_NAME: ecrRepo.repositoryUri,
       },
+      // Configure local cache for Docker layers
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER)
     });
 
     pipeline.addStage(new ApplicationStageLambda1(this, 'ContainerCDKPipelineLambdaStage1'), {
@@ -95,6 +97,11 @@ export class PipelineStack extends Stack {
 
     buildContainerProject.project.addToRolePolicy(new iam.PolicyStatement({
       actions: ["ecr:GetAuthorizationToken"],
+      resources: ["*"],
+    }));
+    //allow pulling secrets from secrets manager for docker username/ and passwrod
+    buildContainerProject.project.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["secretsmanager:GetSecretValue"],
       resources: ["*"],
     }));
   }

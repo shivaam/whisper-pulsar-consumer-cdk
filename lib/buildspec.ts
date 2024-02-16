@@ -4,7 +4,11 @@ export const buildspec = {
       "secrets-manager": {
         "DOCKERHUB_USERNAME": "dockerhub/username",
         "DOCKERHUB_PASS": "dockerhub/password",
-      }},
+      },
+      "variables": {
+        "DOCKER_BUILDKIT": "1"
+      }
+    },
     "phases": {
         "install" : {
             "runtime-versions": {
@@ -29,7 +33,7 @@ export const buildspec = {
                     'echo Building image...',
                     'echo $IMAGE_REPO_NAME',
                     'echo $IMAGE_TAG',
-                    'docker build --no-cache -t $IMAGE_REPO_NAME:$IMAGE_TAG .',
+                    'docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .',
                     'docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $IMAGE_REPO_NAME:$IMAGE_TAG',
             ],
         },
