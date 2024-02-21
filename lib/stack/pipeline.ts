@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Stage, Stack, StageProps, StackProps, CfnOutput, SecretValue } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ShellStep, CodeBuildStep } from 'aws-cdk-lib/pipelines';
-import { buildspec } from './buildspec'; // Adjust the import path as necessary
+import { buildspec } from '../buildspec'; // Adjust the import path as necessary
 
 const imageTag = `latest-${uuidv4().split('-').pop()}`;
 
@@ -34,17 +34,17 @@ export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const ecrRepo = new ecr.Repository(this, "LambdaContainerPipeline");
+    const ecrRepo = new ecr.Repository(this, "WhisperPulsarConsumerEcrRepo", );
 
-    new CfnOutput(this, 'EcrRepoName', {
-      value: ecrRepo.repositoryName,
-      exportName: "EcrRepoName"
-    });
+    // new CfnOutput(this, 'EcrRepoName', {
+    //   value: ecrRepo.repositoryName,
+    //   exportName: "EcrRepoName"
+    // });
 
-    new CfnOutput(this, 'EcrRepoUri', {
-      value: ecrRepo.repositoryUri,
-      exportName: "EcrRepoUri"
-    });
+    // new CfnOutput(this, 'EcrRepoUri', {
+    //   value: ecrRepo.repositoryUri,
+    //   exportName: "EcrRepoUri"
+    // });
 
     const githubRepo = 'shivaam/whisper-pulsar-consumer-cdk';
 
@@ -106,3 +106,4 @@ export class PipelineStack extends Stack {
     }));
   }
 }
+// 130 % aws secretsmanager create-secret --name 'dockerhub/username' --secret-string 'shivam246'      
