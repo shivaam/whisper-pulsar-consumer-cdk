@@ -49,7 +49,7 @@ export class PipelineStack extends Stack {
     const githubRepo = 'shivaam/whisper-pulsar-consumer-cdk';
 
     const gitHubSource = CodePipelineSource.gitHub(githubRepo, "master", {
-      authentication: SecretValue.secretsManager("lambda_container_cdk_pipeline_github", { jsonField: 'github' }),
+      authentication: SecretValue.secretsManager("github-token"),
     });
 
     // A shell script step that describes a github source code and runs the commands on the source code to build the pipeline.
@@ -68,7 +68,7 @@ export class PipelineStack extends Stack {
     const githubAppRepo = 'shivaam/whisper-pulsar-consumer';
 
     const gitHubAppSource = CodePipelineSource.gitHub(githubAppRepo, "master", {
-      authentication: SecretValue.secretsManager("lambda_container_cdk_pipeline_github", { jsonField: 'github' }),
+      authentication: SecretValue.secretsManager("github-token"),
     });
 
     const buildContainerProject = new CodeBuildStep("ContainerBuild", {

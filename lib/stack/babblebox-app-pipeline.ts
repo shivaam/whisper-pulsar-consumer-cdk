@@ -29,6 +29,12 @@ export class BabbleboxAppPipeline extends cdk.Stack {
 
         const buildSpec = codebuild.BuildSpec.fromObject(buildspecBabblebox);
 
+        const githubRepoCdk = 'shivaam/whisper-pulsar-consumer-cdk';
+
+        const gitHubSourceCdk = pipeline.CodePipelineSource.gitHub(githubRepoCdk, "babbleboxapppipeline", {
+        authentication: cdk.SecretValue.secretsManager("github-token"),
+        });
+
         const githubRepo = 'shivaam/babblebox';
 
         const gitHubSource = pipeline.CodePipelineSource.gitHub(githubRepo, "production-local", {
@@ -39,7 +45,7 @@ export class BabbleboxAppPipeline extends cdk.Stack {
           selfMutation: false,
           pipelineName: "BabbleboxPipeline",
           synth: new pipeline.ShellStep("Synth", {
-              input: gitHubSource,
+              input: gitHubSourceCdk,
               commands: [
               ],
           }),
