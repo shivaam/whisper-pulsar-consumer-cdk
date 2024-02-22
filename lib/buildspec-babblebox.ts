@@ -10,12 +10,6 @@ export const buildspecBabblebox = {
       }
     },
     "phases": {
-        "install" : {
-            "runtime-versions": {
-                    "python": 3.8
-            },
-        },
-
         "pre_build" : {
             "commands": [
                     'echo Logging in to Docker Hub...',
