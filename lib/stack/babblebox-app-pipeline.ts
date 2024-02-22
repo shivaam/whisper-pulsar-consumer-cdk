@@ -42,7 +42,7 @@ export class BabbleboxAppPipeline extends cdk.Stack {
         });
 
         const babbleboxPipeline = new pipeline.CodePipeline(this, "ContainerPipeline", {
-          selfMutation: false,
+          selfMutation: true,
           pipelineName: "BabbleboxPipeline",
           synth: new pipeline.ShellStep("Synth", {
               input: gitHubSourceCdk,
