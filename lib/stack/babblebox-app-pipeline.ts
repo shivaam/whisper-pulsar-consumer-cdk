@@ -46,8 +46,7 @@ export class BabbleboxAppPipeline extends cdk.Stack {
           pipelineName: "BabbleboxPipeline",
           synth: new pipeline.ShellStep("Synth", {
               input: gitHubSourceCdk,
-              commands: [
-              ],
+              commands: ["npm install -g aws-cdk", "npm install", "cdk synth"],
           }),
         });
 
