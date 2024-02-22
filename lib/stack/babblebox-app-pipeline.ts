@@ -32,16 +32,17 @@ export class BabbleboxAppPipeline extends cdk.Stack {
         const githubRepo = 'shivaam/babblebox';
 
         const gitHubSource = pipeline.CodePipelineSource.gitHub(githubRepo, "production-local", {
-        authentication: cdk.SecretValue.secretsManager("lambda_container_cdk_pipeline_github", { jsonField: 'github' }),
+        authentication: cdk.SecretValue.secretsManager("github-token"),
         });
 
         const babbleboxPipeline = new pipeline.CodePipeline(this, "ContainerPipeline", {
-            pipelineName: "BabbleboxPipeline",
-            synth: new pipeline.ShellStep("Synth", {
-                input: gitHubSource,
-                commands: [
-                ],
-            }),
+          selfMutation: false,
+          pipelineName: "BabbleboxPipeline",
+          synth: new pipeline.ShellStep("Synth", {
+              input: gitHubSource,
+              commands: [
+              ],
+          }),
         });
 
         const buildContainerProject = new pipeline.CodeBuildStep("ContainerBuild", {
