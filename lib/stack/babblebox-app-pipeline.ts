@@ -7,64 +7,99 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { v4 as uuidv4 } from 'uuid';
 import { buildspecBabblebox } from '../buildspec-babblebox';
 import { Construct } from 'constructs';
+import { Stage } from 'aws-cdk-lib';
 
 const imageTag = `latest-${uuidv4().split('-').pop()}`;
 
+export class LambdaStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+  }
+}
+
+class ApplicationStageLambda1 extends Stage {
+  constructor(scope: Construct, id: string, props?: cdk.StageProps) {
+    super(scope, id, props);
+
+    new LambdaStack(this, 'Demo-Lambda1');
+  }
+}
+
 export class BabbleboxAppPipeline extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-        super(scope, id, props);
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
-        const repositoryNames = [
-            'babblebox_production_django',
-            'babblebox_production_postgres',
-            'babblebox_production_traefik',
-            'babblebox_production_celeryworker',
-            'babblebox_production_celerybeat',
-            'babblebox_production_flower',
-            'babblebox_production_awscli'
-        ];
+    const repositoryNames = [
+      'babblebox_production_django',
+      'babblebox_production_postgres',
+      'babblebox_production_traefik',
+      'babblebox_production_celeryworker',
+      'babblebox_production_celerybeat',
+      'babblebox_production_flower',
+      'babblebox_production_awscli'
+    ];
 
-        const ecrRepos = repositoryNames.map(repoName => ecr.Repository.fromRepositoryName(this, repoName, repoName));
-        const ecrRegistry = ecrRepos[0].repositoryArn.split("/")[0];
+    const ecrRepos = repositoryNames.map(repoName => ecr.Repository.fromRepositoryName(this, repoName, repoName));
+    const ecrRegistry = ecrRepos[0].repositoryArn.split("/")[0];
 
-        const buildSpec = codebuild.BuildSpec.fromObject(buildspecBabblebox);
+    const buildSpec = codebuild.BuildSpec.fromObject(buildspecBabblebox);
 
-        const githubRepoCdk = 'shivaam/whisper-pulsar-consumer-cdk';
+    const githubRepoCdk = 'shivaam/whisper-pulsar-consumer-cdk';
 
-        const gitHubSourceCdk = pipeline.CodePipelineSource.gitHub(githubRepoCdk, "babbleboxapppipeline", {
-        authentication: cdk.SecretValue.secretsManager("github-token"),
-        });
+    const gitHubSourceCdk = pipeline.CodePipelineSource.gitHub(githubRepoCdk, "babbleboxapppipeline", {
+      authentication: cdk.SecretValue.secretsManager("github-token"),
+    });
 
-        const githubRepo = 'shivaam/babblebox';
+    const githubRepo = 'shivaam/babblebox';
 
-        const gitHubSource = pipeline.CodePipelineSource.gitHub(githubRepo, "production-local", {
-        authentication: cdk.SecretValue.secretsManager("github-token"),
-        });
+    const gitHubSource = pipeline.CodePipelineSource.gitHub(githubRepo, "production-local", {
+      authentication: cdk.SecretValue.secretsManager("github-token"),
+    });
 
-        const babbleboxPipeline = new pipeline.CodePipeline(this, "ContainerPipeline", {
-          selfMutation: true,
-          pipelineName: "BabbleboxPipeline",
-          synth: new pipeline.ShellStep("Synth", {
-              input: gitHubSourceCdk,
-              commands: ["npm install -g aws-cdk", "npm install", "cdk synth"],
-          }),
-        });
+    const babbleboxPipeline = new pipeline.CodePipeline(this, "ContainerPipeline", {
+      selfMutation: true,
+      pipelineName: "BabbleboxPipeline",
+      synth: new pipeline.ShellStep("Synth", {
+        input: gitHubSourceCdk,
+        commands: ["npm install -g aws-cdk", "npm install", "cdk synth"],
+      }),
+    });
 
-        const buildContainerProject = new pipeline.CodeBuildStep("ContainerBuild", {
-            buildEnvironment: {
-              buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
-              privileged: true,
-            },
-            input: gitHubSource,
-            partialBuildSpec: buildSpec,
-            commands: [],
-            env: {
-              ECR_REGISTRY: ecrRegistry,
-              AWS_ACCOUNT_ID: this.account,
-            },
-            // Configure local cache for Docker layers
-            cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER)
-          });
 
-    }
+    const buildContainerProject = new pipeline.CodeBuildStep("ContainerBuild", {
+      buildEnvironment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        privileged: true,
+      },
+      input: gitHubSource,
+      partialBuildSpec: buildSpec,
+      commands: [],
+      env: {
+        ECR_REGISTRY: ecrRegistry,
+        AWS_ACCOUNT_ID: this.account,
+      },
+      // Configure local cache for Docker layers
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER)
+    });
+
+    babbleboxPipeline.addStage(new ApplicationStageLambda1(this, 'test'), {
+      pre: [buildContainerProject]
+    });
+    //Add buildContainerProject stage to the pipeline that just does the build and push to ECR
+    babbleboxPipeline.buildPipeline();
+    ecrRepos.forEach((repo) => {
+      repo.grantPullPush(buildContainerProject.project);
+    });
+
+
+    buildContainerProject.project.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["ecr:GetAuthorizationToken"],
+      resources: ["*"],
+    }));
+    //allow pulling secrets from secrets manager for docker username/ and passwrod
+    buildContainerProject.project.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["secretsmanager:GetSecretValue"],
+      resources: ["*"],
+    }));
+  }
 } 
