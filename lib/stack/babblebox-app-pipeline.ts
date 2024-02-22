@@ -68,7 +68,7 @@ export class BabbleboxAppPipeline extends cdk.Stack {
 
     const buildContainerProject = new pipeline.CodeBuildStep("ContainerBuild", {
       buildEnvironment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
         privileged: true,
       },
       input: gitHubSource,

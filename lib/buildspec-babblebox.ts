@@ -31,6 +31,7 @@ export const buildspecBabblebox = {
             "commands": [
                     'cd babblebox',
                     'pwd',
+                    'sudo apt-get install docker-compose-plugin',
                     'echo Building image...',
                     'DOCKER_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com" docker compose -f production.yml build',
                 ],
