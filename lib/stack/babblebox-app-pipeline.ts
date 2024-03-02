@@ -11,17 +11,17 @@ import { Stage } from 'aws-cdk-lib';
 
 const imageTag = `latest-${uuidv4().split('-').pop()}`;
 
-export class LambdaStack extends cdk.Stack {
+export class ApplicationStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
   }
 }
 
-class ApplicationStageLambda1 extends Stage {
+class ApplicationStage extends Stage {
   constructor(scope: Construct, id: string, props?: cdk.StageProps) {
     super(scope, id, props);
 
-    new LambdaStack(this, 'Demo-Lambda1');
+    new ApplicationStack(this, 'Demo-Lambda1');
   }
 }
 
@@ -77,12 +77,13 @@ export class BabbleboxAppPipeline extends cdk.Stack {
       env: {
         ECR_REGISTRY: ecrRegistry,
         AWS_ACCOUNT_ID: this.account,
+        IMAGE_TAG:imageTag
       },
       // Configure local cache for Docker layers
       cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER)
     });
 
-    babbleboxPipeline.addStage(new ApplicationStageLambda1(this, 'test'), {
+    babbleboxPipeline.addStage(new ApplicationStage(this, 'buildAndPush'), {
       pre: [buildContainerProject]
     });
     //Add buildContainerProject stage to the pipeline that just does the build and push to ECR
