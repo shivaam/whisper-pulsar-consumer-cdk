@@ -4,6 +4,7 @@ export const buildspecBabblebox = {
       "secrets-manager": {
         "DOCKERHUB_USERNAME": "dockerhub/username",
         "DOCKERHUB_PASS": "dockerhub/password",
+        "GITHUB_TOKEN": "github-token",
       },
       "variables": {
         "DOCKER_BUILDKIT": "1",
@@ -47,7 +48,10 @@ export const buildspecBabblebox = {
                 'grep -i image k8s/*',
                 'git add k8s/',
                 'git commit -m "updated image tag to ${IMAGE_TAG}"',
-                'git push origin production-local',
+                'git config --global user.email ""',
+                'git config --global user.name "CodeBuild"',
+                'git push https://${GITHUB_TOKEN}/shivaam/babblebox.git'
+                ,
             ],
         },
     },
