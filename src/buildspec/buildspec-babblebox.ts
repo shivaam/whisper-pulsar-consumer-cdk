@@ -50,9 +50,9 @@ export const buildspecBabblebox = {
                 'sed -i "s/CODE_XTAG/${IMAGE_TAG}/g" k8s/*',
                 'grep -i image k8s/*',
                 'git add k8s/',
-                'git commit -m "updated image tag to ${IMAGE_TAG}"',
                 'git config --global user.email "test.run@gmail.com"',
                 'git config --global user.name "CodeBuild"',
+                'git commit -m "updated image tag to ${IMAGE_TAG}"',
                 'git push https://${GITHUB_TOKEN}/shivaam/babblebox.git'
                 ,
             ],
