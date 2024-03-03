@@ -51,7 +51,7 @@ export const buildspecBabblebox = {
                 'grep -i image k8s/*',
                 'git add k8s/',
                 'git commit -m "updated image tag to ${IMAGE_TAG}"',
-                'git config --global user.email ""',
+                'git config --global user.email "test.run@gmail.com"',
                 'git config --global user.name "CodeBuild"',
                 'git push https://${GITHUB_TOKEN}/shivaam/babblebox.git'
                 ,
