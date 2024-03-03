@@ -8,6 +8,7 @@ export const buildspecBabblebox = {
       },
       "variables": {
         "DOCKER_BUILDKIT": "1",
+        //this wont work as the image tag is not available at the time of build
         "DOCKER_REGISTRY": "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com",
         "IMAGE_TAG": "${IMAGE_TAG}"
       }
@@ -31,13 +32,13 @@ export const buildspecBabblebox = {
                     'cd babblebox',
                     'pwd',
                     'echo Building image...',
-                    'DOCKER_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com" IMAGE_TAG="${IMAGE_TAG} docker compose -f production.yml build',
+                    'DOCKER_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com" IMAGE_TAG="${IMAGE_TAG}" docker compose -f production.yml build',
                 ],
         },
         "post_build" : {
             "commands": [
                 'echo Pushing the Docker images...',
-                'docker compose -f production.yml push',
+                'DOCKER_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com" IMAGE_TAG="${IMAGE_TAG}" docker compose -f production.yml push',
                 'echo Build completed',
                 'git clone https://github.com/shivaam/babblebox.git',
                 'cd babblebox',

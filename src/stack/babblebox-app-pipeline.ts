@@ -39,7 +39,9 @@ export class BabbleboxAppPipeline extends cdk.Stack {
       'babblebox_production_awscli'
     ];
 
-    // //create ecr repos
+    // //create ecr repos - can only be created one time since it is a resource with a fixed name'
+    // Cfn does not allow creating multiple times with the same name
+    
     // const ecrRepos = repositoryNames.map(repoName => new ecr.Repository(this, repoName, {
     //   repositoryName: repoName,
     // }));
