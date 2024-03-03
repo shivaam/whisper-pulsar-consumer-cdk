@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { v4 as uuidv4 } from 'uuid';
-import { buildspecBabblebox } from '../buildspec-babblebox';
+import { buildspecBabblebox } from '../buildspec/buildspec-babblebox';
 import { Construct } from 'constructs';
 import { Stage } from 'aws-cdk-lib';
 
@@ -39,7 +39,11 @@ export class BabbleboxAppPipeline extends cdk.Stack {
       'babblebox_production_awscli'
     ];
 
-    const ecrRepos = repositoryNames.map(repoName => ecr.Repository.fromRepositoryName(this, repoName, repoName));
+    //create ecr repos
+    const ecrRepos = repositoryNames.map(repoName => new ecr.Repository(this, repoName, {
+      repositoryName: repoName,
+    }));
+
     const ecrRegistry = ecrRepos[0].repositoryArn.split("/")[0];
 
     const buildSpec = codebuild.BuildSpec.fromObject(buildspecBabblebox);
@@ -52,7 +56,7 @@ export class BabbleboxAppPipeline extends cdk.Stack {
 
     const githubRepo = 'shivaam/babblebox';
 
-    const gitHubSource = pipeline.CodePipelineSource.gitHub(githubRepo, "production-local", {
+    const gitHubSourceApp = pipeline.CodePipelineSource.gitHub(githubRepo, "production-local", {
       authentication: cdk.SecretValue.secretsManager("github-token"),
     });
 
@@ -71,7 +75,7 @@ export class BabbleboxAppPipeline extends cdk.Stack {
         buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
         privileged: true,
       },
-      input: gitHubSource,
+      input: gitHubSourceApp,
       partialBuildSpec: buildSpec,
       commands: [],
       env: {

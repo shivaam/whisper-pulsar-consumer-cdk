@@ -13,3 +13,12 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
+
+
+'''
+Pipeline: Internal Failure
+If you see the following error during deployment of your pipeline:
+
+CREATE_FAILED  | AWS::CodePipeline::Pipeline | Pipeline/Pipeline
+Internal Failure
+'''

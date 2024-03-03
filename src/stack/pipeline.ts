@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Stage, Stack, StageProps, StackProps, CfnOutput, SecretValue } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ShellStep, CodeBuildStep } from 'aws-cdk-lib/pipelines';
-import { buildspec } from '../buildspec'; // Adjust the import path as necessary
+import { buildspec } from '../buildspec/buildspec'; // Adjust the import path as necessary
 
 const imageTag = `latest-${uuidv4().split('-').pop()}`;
 
