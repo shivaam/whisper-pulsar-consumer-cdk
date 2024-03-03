@@ -39,10 +39,12 @@ export class BabbleboxAppPipeline extends cdk.Stack {
       'babblebox_production_awscli'
     ];
 
-    //create ecr repos
-    const ecrRepos = repositoryNames.map(repoName => new ecr.Repository(this, repoName, {
-      repositoryName: repoName,
-    }));
+    // //create ecr repos
+    // const ecrRepos = repositoryNames.map(repoName => new ecr.Repository(this, repoName, {
+    //   repositoryName: repoName,
+    // }));
+
+    const ecrRepos = repositoryNames.map(repoName => ecr.Repository.fromRepositoryName(this, repoName, repoName));
 
     const ecrRegistry = ecrRepos[0].repositoryArn.split("/")[0];
 
