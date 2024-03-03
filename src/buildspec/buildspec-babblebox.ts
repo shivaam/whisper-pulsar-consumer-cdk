@@ -45,7 +45,7 @@ export const buildspecBabblebox = {
                 'git clone https://${GITHUB_TOKEN}@github.com/shivaam/babblebox.git',
                 'cd babblebox',
                 'ls -l',
-                'git checkout -b production-local-development',
+                'git checkout production-local',
                 'cd babblebox',
                 'sed -i "s/CODE_XTAG/${IMAGE_TAG}/g" k8s/*',
                 'grep -i image k8s/*',
