@@ -38,11 +38,13 @@ export const buildspecBabblebox = {
         "post_build" : {
             "commands": [
                 'echo Pushing the Docker images...',
-                'DOCKER_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com" IMAGE_TAG="${IMAGE_TAG}" docker compose -f production.yml push',
+                'DOCKER_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com" IMAGE_TAG="${IMAGE_TAG}"docker compose -f production.yml push',
                 'echo Build completed',
+                'mkdir tmpbabblebox',
+                'cd tmpbabblebox',
                 'git clone https://github.com/shivaam/babblebox.git',
                 'cd babblebox',
-                'ls -l',
+                'ls -l',~
                 'git checkout production-local',
                 'cd babblebox',
                 'sed -i "s/CODE_XTAG/${IMAGE_TAG}/g" k8s/*',
